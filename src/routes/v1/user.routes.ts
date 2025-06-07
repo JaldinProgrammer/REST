@@ -84,9 +84,9 @@ router.get('/',
 
 /**
  * @swagger
- * /api/v1/users/{id}:
+ * /api/v1/users/12345:
  *   get:
- *     summary: Get user by ID
+ *     summary: Get user by ID (wildcards are not recommended in API paths)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -266,6 +266,73 @@ router.delete('/:id',
   param('id').isInt({ min: 1 }),
   validateRequest,
   userController.deleteUser.bind(userController)
+);
+
+/**
+ * @swagger
+ * /api/v1/User/{userId}/post:
+ *   post:
+ *     summary: Create a new post (Not good because of casing and pluralization inconsistency)
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 100
+ *               content:
+ *                 type: string
+ *                 minLength: 10
+ *     responses:
+ *       201:
+ *         description: Post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     user_id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Invalid input data
+ */
+router.post('/:userId/posts',
+  param('userId'),
+  body('title').trim().isLength({ min: 3, max: 100 }),
+  body('content').trim().isLength({ min: 10 }),
+  validateRequest,
+  userController.createPost.bind(userController)
 );
 
 /**
