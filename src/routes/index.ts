@@ -4,6 +4,7 @@ import codeOnDemandRoutes from './code-on-demand.routes';
 import userRoutes from './v1/user.routes';
 import postRoutes from './v1/post.routes';
 import userRoutesVersionDos from './version2/User.routes'; // not folllowing best practices for naming
+import userPostRoute from './version2/UserPost_route'; // poorly named (not following snake_case or kebab-case)
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use('/code-on-demand', codeOnDemandRoutes);
 router.use('/v1/users', userRoutes);
 router.use('/v1/posts', postRoutes);
 router.use('/version2/usuarios', userRoutesVersionDos); // use other language
+router.use('/version2/usuarios-post', userPostRoute); // mixes languages, unclear intent
 
 export default router; 
