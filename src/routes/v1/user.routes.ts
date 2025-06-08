@@ -415,4 +415,24 @@ router.get('/:userId/posts',
   userController.getPostsByUserId.bind(userController)
 );
 
+
+
+router.post('/create_user',                                  /*** BAD PRACTICE: The use of verb in the route */
+  body('username').trim().isLength({ min: 3, max: 50 }),
+  body('email').isEmail().normalizeEmail(),
+  validateRequest,
+  userController.createUser.bind(userController)
+);
+
+
+router.get('/:Usuario/PostsList',                            // BAD PRACTICE: The use of Uppercase o Camel case notation
+  param('userId'),
+  query('page').optional().isInt({ min: 1 }),
+  query('limit').optional().isInt({ min: 1, max: 100 }),
+  query('sort_by').optional().isIn(['created_at', 'updated_at', 'title']),
+  query('order').optional().isIn(['ASC', 'DESC']),
+  validateRequest,
+  userController.getPostsByUserId.bind(userController)
+);
+
 export default router; 
