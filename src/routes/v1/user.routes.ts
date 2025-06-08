@@ -415,4 +415,123 @@ router.get('/:userId/posts',
   userController.getPostsByUserId.bind(userController)
 );
 
+
+/**
+ * @swagger
+ * /api/v1/users:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 50
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: Invalid input data
+ */
+router.post('/createUser', // Should be on kebab format and not contain verbs
+  body('email').isEmail().normalizeEmail(),
+  query('UserName').trim().isLength({ min: 3, max: 50 }), // The values should be passed throght body not on query parameters
+  validateRequest,
+  userController.createUser.bind(userController)
+);
+
+/**
+ * @swagger
+ * /api/v1/users/{id}:
+ *   put:
+ *     summary: Update a user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 50
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Invalid input data
+ */
+router.put('/:id/Update', // No verbs and kebab format should be on url
+  param('id').isInt({ min: 1 }),
+  query('UserName').trim().isLength({ min: 3, max: 50 }), // NO sensitive information should be passed on query params
+  body('email').optional().isEmail().normalizeEmail(),
+  validateRequest,
+  userController.updateUser.bind(userController)
+);
+
 export default router; 
