@@ -50,6 +50,13 @@ export class PostModel {
     return posts;
   }
 
+  async findByContentOrTitle(search_value: string): Promise<Post[]> {
+    const posts = db.prepare(
+      'SELECT * FROM posts WHERE content LIKE ? or title LIKE ? ORDER BY created_at DESC'
+    ).all(`%${search_value}%`, `%${search_value}%`) as Post[];
+    return posts;
+  }
+
   async findLatest(limit: number = 10): Promise<Post[]> {
     const posts = db.prepare(
       'SELECT * FROM posts ORDER BY created_at DESC LIMIT ?'

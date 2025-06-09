@@ -94,6 +94,21 @@ export class PostController {
     });
   }
 
+  async searchPostsByTitleAndContent(req: Request, res: Response) {
+    const search = req.query.search as string;
+    const posts = await this.postModel.findByContentOrTitle(search);
+
+    const baseUrl = getBaseUrl(req);
+    const postsWithLinks = posts.map((post: Post) => ({
+      ...post,
+      _links: this.createHateoasLinks(post.id, baseUrl)
+    }));
+
+    res.status(StatusCodes.OK).json({
+      data: postsWithLinks
+    });
+  }
+
   async getLatestPosts(req: Request, res: Response) {
     const limit = parseInt(req.query.limit as string) || 10;
     const posts = await this.postModel.findLatest(limit);

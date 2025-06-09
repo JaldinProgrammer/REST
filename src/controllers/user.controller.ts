@@ -3,6 +3,7 @@ import { UserModel } from '../models/user.model';
 import { AppError } from '../middleware/errorHandler';
 import { StatusCodes } from 'http-status-codes';
 import { getBaseUrl } from '../utils/url';
+import { listeners } from 'process';
 
 export class UserController {
   constructor(private userModel: UserModel) {}
@@ -48,6 +49,35 @@ export class UserController {
     });
   }
 
+  async getWrongUsers(req: Request, res: Response) {
+    const { page, limit, sortBy , order} = req.body;
+
+    const { users, total } = await this.userModel.findAll(page, limit, sortBy, order);
+    
+    const baseUrl = getBaseUrl(req);
+    const usersWithLinks = users.map(user => ({
+      ...user,
+      _links: this.createHateoasLinks(user.id, baseUrl)
+    }));
+
+    res.status(StatusCodes.OK).json({
+      data: usersWithLinks,
+      pagination: {
+        total,
+        page,
+        limit,
+        total_pages: Math.ceil(total / limit)
+      },
+      _links: {
+        self: { href: `${baseUrl}/api/v1/users?page=${page}&limit=${limit}` },
+        next: page < Math.ceil(total / limit) ? 
+          { href: `${baseUrl}/api/v1/users?page=${page + 1}&limit=${limit}` } : null,
+        prev: page > 1 ? 
+          { href: `${baseUrl}/api/v1/users?page=${page - 1}&limit=${limit}` } : null
+      }
+    });
+  }
+
   async getUserById(req: Request, res: Response) {
     const userId = parseInt(req.params.id);
     const user = await this.userModel.findById(userId);
@@ -66,9 +96,12 @@ export class UserController {
   }
 
   async createUser(req: Request, res: Response) {
-    const { username, email } = req.body;
+    let { username, email } = req.body;
+    const wrong_username = parseInt(req.query.UserName as string);
+    if (! username) {
+      username = wrong_username;
+    }
     const user = await this.userModel.create(username, email);
-
     const baseUrl = getBaseUrl(req);
     res.status(StatusCodes.CREATED).json({
       data: {
@@ -80,7 +113,12 @@ export class UserController {
 
   async updateUser(req: Request, res: Response) {
     const userId = parseInt(req.params.id);
-    const { username, email } = req.body;
+    let { username, email } = req.body;
+
+    const wrong_username = parseInt(req.query.UserName as string);
+    if (! username) {
+      username = wrong_username;
+    }
     
     const user = await this.userModel.update(userId, username, email);
     if (!user) {
@@ -97,7 +135,11 @@ export class UserController {
   }
 
   async deleteUser(req: Request, res: Response) {
-    const userId = parseInt(req.params.id);
+    let userId = parseInt(req.params.id);
+    const id = parseInt(req.query.id as string);
+    if (! userId) {
+      userId = id;
+    }
     const deleted = await this.userModel.delete(userId);
     
     if (!deleted) {
