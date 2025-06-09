@@ -534,4 +534,84 @@ router.put('/:id/Update', // No verbs and kebab format should be on url
   userController.updateUser.bind(userController)
 );
 
-export default router; 
+export default router;
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/posts:
+ *   get:
+ *     summary: Get all posts for a user
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: sort_by
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *     responses:
+ *       200:
+ *         description: List of posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       user_id:
+ *                         type: integer
+ *                       title:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     total_pages:
+ *                       type: integer
+ *       404:
+ *         description: User not found
+ */
+router.get('/:userId/posts/get_POSTS', //Should be on kebab format
+  param('userId'),
+  //query('page').optional().isInt({ min: 1 }),
+  //query('limit').optional().isInt({ min: 1, max: 100 }), // The limit should be present to not cause performance issues
+  query('sort_by').optional().isIn(['created_at', 'updated_at', 'title']),
+  query('order').optional(),//.isIn(['ASC', 'DESC']), We should set expected values on query params to avoid issues
+  validateRequest,
+  userController.getPostsByUserId.bind(userController)
+);
