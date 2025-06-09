@@ -10,7 +10,6 @@ const postController = new PostController(userModel);
 /**
  * @swagger
  * /api/v1/posts:
- *   /:
  *     get:
  *       summary: Get all posts with pagination and sorting
  *       tags:
