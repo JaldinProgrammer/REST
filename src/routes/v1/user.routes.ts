@@ -3,10 +3,12 @@ import { body, param, query } from 'express-validator';
 import { UserController } from '../../controllers/user.controller';
 import { validateRequest } from '../../middleware/validate-request';
 import { UserModel } from '../../models/user.model';
+import { BadUserController } from '../../controllers/bad-user.controller';
 
 const router = Router();
 const userModel = new UserModel();
 const userController = new UserController(userModel);
+const badUserController = new BadUserController(userModel);
 
 /**
  * @swagger
@@ -73,13 +75,15 @@ const userController = new UserController(userModel);
  *                     total_pages:
  *                       type: integer
  */
+
+////al poner  badUserController se estan inyectando las malasa practicas, se prefirio crear todo uin controlador nuevo para no mezclar las buenas y malas practicas
 router.get('/',
   query('page').optional().isInt({ min: 1 }),
   query('limit').optional().isInt({ min: 1, max: 100 }),
   query('sort_by').optional().isIn(['created_at', 'updated_at', 'username', 'email']),
   query('order').optional().isIn(['ASC', 'DESC']),
   validateRequest,
-  userController.getUsers.bind(userController)
+  badUserController.getUsers.bind(badUserController)
 );
 
 /**
@@ -415,4 +419,4 @@ router.get('/:userId/posts',
   userController.getPostsByUserId.bind(userController)
 );
 
-export default router; 
+export default router;
