@@ -68,4 +68,9 @@ export class PostModel {
     `).all(limit) as Post[];
     return posts;
   }
+
+  async deletePostById(id: number): Promise<boolean> {
+    const result = db.prepare('DELETE FROM posts WHERE id = ?').run(id);
+    return result.changes > 0;
+  }
 } 
