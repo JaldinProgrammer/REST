@@ -10,8 +10,8 @@ const userController = new UserController(userModel);
 
 /**
  * @swagger
- * /api/v1/users/{userId}/posts:
- *   get:
+ * /api/v1/users/{userId}//v1/user-posts/:
+ *   patch:
  *     summary: Get all posts for a user
  *     tags: [Posts]
  *     parameters:
@@ -91,8 +91,8 @@ router.patch('/:userId/v1/user-posts/',
 
 /**
  * @swagger
- * /api/v1/users/{userId}/posts:
- *   post:
+ * /api/v1/users/{userId}/insert-posts:
+ *   get:
  *     summary: Create a new post
  *     tags: [Posts]
  *     parameters:
