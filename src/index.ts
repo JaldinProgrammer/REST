@@ -10,8 +10,6 @@ import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 import { swaggerOptions } from './config/swagger';
 import routes from './routes';
-import { ApolloServer } from 'apollo-server';
-import { typeDefinitions, resolvers } from './graphql';
 
 // Load environment variables
 config();
@@ -76,12 +74,3 @@ app.listen(port, () => {
   logger.info(`Server is running on port ${port}`);
   logger.info(`Swagger documentation available at http://localhost:${port}/api-docs`);
 }); 
-
-const server = new ApolloServer({
-  typeDefs: typeDefinitions,
-  resolvers,
-});
-
-server.listen({ port: 4567}).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
